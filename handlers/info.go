@@ -65,7 +65,7 @@ func fetchURL(URL string) (data.Images, error) {
 		return nil, fmt.Errorf("parsing html error: %s: %s\n", URL, resp.Status)
 	}
 
-	return data.GetImages(nil, doc), nil
+	return data.GetImages(nil, doc, resp), nil
 }
 
 // getURL extracts URL from JSON taken from r.Body
