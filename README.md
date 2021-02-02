@@ -14,7 +14,7 @@ $ go run main.go
 ```
 
 ## Usage
-The server accepts requests from port :3000
+The server accepts POST requests from port :3000
 
 ```shell script
 $ curl localhost:3000 -d '{"url":"https://golang.org/pkg/net/http/"}'
