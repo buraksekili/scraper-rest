@@ -1,8 +1,6 @@
 package data
 
 import (
-	"encoding/json"
-	"io"
 	"net/http"
 	"strings"
 
@@ -20,12 +18,6 @@ type PageInfo struct {
 // Includes URL that is going to be fetched.
 type Cred struct {
 	URL string `json:"url"`
-}
-
-// FromJSON decodes the JSON from given io.Reader, e.g., r.Body
-func (c *Cred) FromJSON(r io.Reader) error {
-	d := json.NewDecoder(r)
-	return d.Decode(c)
 }
 
 // GetImages traverses the parsed HTML, returns each images in HTML.

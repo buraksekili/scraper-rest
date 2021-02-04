@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,36 +15,9 @@ type Info struct {
 }
 
 // GetNewInfo creates handler with logger for HTTP requests
+// Constructor for Info
 func GetNewInfo(l *log.Logger) *Info {
 	return &Info{l: l}
-}
-
-// ServeHTTP is a must for implementing http.Handler for Info
-// https://golang.org/pkg/net/http/#Handler
-func (i *Info) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		url := getURL(w, r)
-		fmt.Println("URL", url)
-		if url == "" || len(url) == 0 {
-			http.Error(w, "Invalid URL provided", http.StatusBadRequest)
-			return
-		}
-
-		images, err := fetchURL(url)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		encoder := json.NewEncoder(w)
-		err = encoder.Encode(images)
-		if err != nil {
-			http.Error(w, "Unable to marshal json", http.StatusInternalServerError)
-		}
-
-		return
-	}
-	http.Error(w, fmt.Sprintf("Expect method POST, got %v", r.Method), http.StatusMethodNotAllowed)
 }
 
 // fetchURL fetches the images of given URL
@@ -57,7 +29,7 @@ func fetchURL(URL string) (data.Images, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("getting %s: %s\n", URL, resp.Status)
+		return nil, ErrInvalidURL
 	}
 
 	doc, err := html.Parse(resp.Body)
@@ -72,14 +44,16 @@ func fetchURL(URL string) (data.Images, error) {
 func getURL(w http.ResponseWriter, r *http.Request) string {
 	cred := &data.Cred{}
 
-	err := cred.FromJSON(r.Body)
+	err := data.FromJSON(cred, r.Body)
 	if err != nil {
-		http.Error(w, "Couldn't decode given JSON", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		data.ToJSON(HandlerError{Message: "Invalid JSON"}, w)
 		return ""
 	}
 
 	if len(cred.URL) < 1 {
-		http.Error(w, "Invalid JSON is given", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		data.ToJSON(HandlerError{Message: "Invalid JSON field; 'url'"}, w)
 		return ""
 	}
 

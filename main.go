@@ -2,32 +2,41 @@ package main
 
 import (
 	"context"
-	"github.com/buraksekili/scraper-rest/handlers"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/gorilla/mux"
+
+	"github.com/buraksekili/scraper-rest/handlers"
+	gohandlers "github.com/gorilla/handlers"
 )
 
 func main() {
 	logger := log.New(os.Stdout, "scraper-api", log.LstdFlags)
 	infoHandler := handlers.GetNewInfo(logger)
 
-	mux := http.NewServeMux()
-	mux.Handle("/", infoHandler)
+	serverRouter := mux.NewRouter()
+
+	getRouter := serverRouter.Methods(http.MethodPost).Subrouter()
+	getRouter.HandleFunc("/images", infoHandler.ParseImages)
+
+	// CORS handler
+	hCORS := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 
 	server := http.Server{
-		Addr: ":3000",
-		Handler: mux,
-		ErrorLog: logger,
-		ReadTimeout: 5 * time.Second,
+		Addr:         ":5000",
+		Handler:      hCORS(serverRouter),
+		ErrorLog:     logger,
+		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
-		IdleTimeout: 120 * time.Second,
+		IdleTimeout:  120 * time.Second,
 	}
 
 	go func() {
-		log.Println("the server is running on port 3000")
+		log.Println("the server is running on port 5000")
 		err := server.ListenAndServe()
 		if err != nil {
 			log.Fatal("Error while listening: %s\n", err)
