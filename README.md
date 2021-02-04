@@ -17,7 +17,7 @@ $ go run main.go
 The server accepts POST requests from port :5000
 
 ```shell script
-$ curl localhost:5000 -d '{"url":"https://golang.org/pkg/net/http/"}'
+$ curl localhost:5000/images -d '{"url":"https://golang.org/pkg/net/http/"}'
 ```
 It returns JSON response as follows;
 ```JSON
@@ -26,7 +26,7 @@ It returns JSON response as follows;
 
 If `jq` is installed, you can pipe the JSON result to get better view.
 ```shell script
-$ curl localhost:5000 -d '{"url":"https://golang.org/pkg/net/http/"}' | jq
+$ curl localhost:5000/images -d '{"url":"https://golang.org/pkg/net/http/"}' | jq
 
 [
   {
@@ -43,6 +43,8 @@ $ curl localhost:5000 -d '{"url":"https://golang.org/pkg/net/http/"}' | jq
 
 ## Acknowledgments
 Image scraper is based on Chapter 5 of the [The Go Programming Language](https://www.gopl.io/)
+
+Highly inspired by [this repo](https://github.com/nicholasjackson/building-microservices-youtube/tree/episode_7/product-api).
 
 ### License
 [MIT](https://github.com/buraksekili/scraper-rest/blob/master/LICENSE)
