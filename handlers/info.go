@@ -22,7 +22,7 @@ func GetNewInfo(l *log.Logger) *Info {
 
 // fetchURL fetches the images of given URL
 func fetchURL(URL string) (data.Images, error) {
-	resp, err := http.Get(URL)
+	resp, err := http.DefaultClient.Get(URL)
 	if err != nil {
 		return nil, err
 	}

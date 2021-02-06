@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/buraksekili/scraper-rest/data"
@@ -15,6 +16,11 @@ func (i *Info) ParseImages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	images, err := fetchURL(url)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		data.ToJSON(&HandlerError{Message: err.Error()}, w)
+		return
+	}
 	switch err {
 	case nil:
 	case ErrInvalidURL:
@@ -23,10 +29,7 @@ func (i *Info) ParseImages(w http.ResponseWriter, r *http.Request) {
 		return
 	default:
 		w.WriteHeader(http.StatusInternalServerError)
-		err2 := data.ToJSON(&HandlerError{Message: err.Error()}, w)
-		if err2 != nil {
-			i.l.Println("err2 as ", err2)
-		}
+		data.ToJSON(&HandlerError{Message: err.Error()}, w)
 		return
 	}
 
