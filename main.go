@@ -20,8 +20,8 @@ func main() {
 
 	serverRouter := mux.NewRouter()
 
-	getRouter := serverRouter.Methods(http.MethodPost).Subrouter()
-	getRouter.HandleFunc("/images", infoHandler.ParseImages)
+	postRouter := serverRouter.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/images", infoHandler.ParseImages)
 
 	// CORS handler
 	hCORS := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
@@ -39,7 +39,7 @@ func main() {
 		log.Println("the server is running on port 5000")
 		err := server.ListenAndServe()
 		if err != nil {
-			log.Fatal("Error while listening: %s\n", err)
+			log.Fatalf("Error while listening: %s\n", err)
 		}
 	}()
 

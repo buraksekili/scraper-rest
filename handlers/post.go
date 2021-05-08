@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/buraksekili/scraper-rest/data"
@@ -39,5 +38,4 @@ func (i *Info) ParseImages(w http.ResponseWriter, r *http.Request) {
 		data.ToJSON(&HandlerError{Message: "Serialization error! Try again."}, w)
 		return
 	}
-	return
 }
